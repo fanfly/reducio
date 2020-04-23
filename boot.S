@@ -2,27 +2,46 @@
 .code16
 
 _start:
-        mov $0x0e, %ah
-        mov $'R', %al
-        int $0x10
-        mov $'e', %al
-        int $0x10
-        mov $'d', %al
-        int $0x10
-        mov $'u', %al
-        int $0x10
-        mov $'c', %al
-        int $0x10
-        mov $'i', %al
-        int $0x10
-        mov $'o', %al
-        int $0x10
-        mov $'!', %al
-        int $0x10
+        mov $reducio, %bx
+        call print
         jmp .
 
-padding:
-        .space 512-2 - (. - _start)
+print:
+        call write
+        push %ax
+        push %bx
+        mov $0x0e, %ah
+        mov $'\r', %al
+        int $0x10
+        mov $'\n', %al
+        int $0x10
+        pop %bx
+        pop %ax
+        ret
 
-magic:
+write:
+        push %ax
+        push %bx
+        mov $0x0e, %ah
+
+write_loop:
+        mov (%bx), %al
+        cmp $0, %al
+        je write_end
+        int $0x10
+        inc %bx
+        jmp write_loop
+
+write_end:
+        pop %bx
+        pop %ax
+        ret
+
+reducio:
+        .string "Reducio!"
+
+padding:
+        .space (512 - 2) - (. - _start)
+
+boot_signature:
         .byte 0x55, 0xaa

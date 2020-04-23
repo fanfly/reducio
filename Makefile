@@ -8,7 +8,7 @@ RM=rm -f
 all: reducio.bin
 
 reducio.bin: boot.o
-	$(LD) $^ --oformat binary -o $@
+	$(LD) $^ -Ttext=0x7c00 --oformat binary -o $@
 
 boot.o: boot.S
 	$(AS) $^ -o $@
