@@ -2,14 +2,21 @@
 .code16
 
 _start:
-        mov $0x9000, %bp
-        mov %bp, %sp
+        mov $0x1000, %bx
+        mov $0x02, %ah
+        mov $2, %al
+        mov $2, %cl
+        mov $0, %ch
+        mov $0, %dh
+        int $0x13
+
+        /* enter protect mode */
         cli
         lgdt gdt_descriptor
         mov %cr0, %eax
         or $1, %eax
         mov %eax, %cr0
-        jmp $0x08, $init_pm
+        jmp $0x08, $init_protect_mode
 
 gdt_start:
         .space 8
@@ -37,7 +44,7 @@ gdt_descriptor:
         .long gdt_start
 
 .code32
-init_pm:
+init_protect_mode:
         mov $0x10, %ax
         mov %ax, %ds
         mov %ax, %ss
@@ -46,31 +53,7 @@ init_pm:
         mov %ax, %gs
         mov $0x90000, %ebp
         mov %ebp, %esp
-        mov $0xb8000, %edx
-        mov $0x0f, %ah
-        mov $'R', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'e', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'d', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'u', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'c', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'i', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'o', %al
-        mov %ax, (%edx)
-        add $2, %edx
-        mov $'!', %al
-        mov %ax, (%edx)
+        call 0x1000
         jmp .
 
 padding:
