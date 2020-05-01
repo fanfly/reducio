@@ -1,8 +1,10 @@
 #include <stdint.h>
 #include "console.h"
+#include "idt.h"
 
 void kernel_main() {
-    console_t console;
-    console_init(&console);
-    console_print(&console, "Reducio!\n");
+    load_idt();
+    console_init();
+    console_print("Reducio!\n");
+    test_int();
 }
