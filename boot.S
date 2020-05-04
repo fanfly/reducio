@@ -4,7 +4,7 @@
 _start:
         mov $0x1000, %bx
         mov $0x02, %ah
-        mov $4, %al
+        mov $10, %al
         mov $2, %cl
         mov $0, %ch
         mov $0, %dh

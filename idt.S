@@ -1,8 +1,9 @@
 .code32
-.extern console_printnum
+.extern isr_handler
+.extern irq_handler
 .global load_idt
 
-.macro set_idt i
+.macro set_idt_isr i
         .word isr\i
         .word 0x0008
         .byte 0x00
@@ -10,39 +11,65 @@
         .word 0x00
 .endm
 
+.macro set_idt_irq i, j
+        .word irq\j
+        .word 0x0008
+        .byte 0x00
+        .byte 0x8e
+        .word 0x00
+.endm
+
 idt_start:
-        set_idt 0
-        set_idt 1
-        set_idt 2
-        set_idt 3
-        set_idt 4
-        set_idt 5
-        set_idt 6
-        set_idt 7
-        set_idt 8
-        set_idt 9
-        set_idt 10
-        set_idt 11
-        set_idt 12
-        set_idt 13
-        set_idt 14
-        set_idt 15
-        set_idt 16
-        set_idt 17
-        set_idt 18
-        set_idt 19
-        set_idt 20
-        set_idt 21
-        set_idt 22
-        set_idt 23
-        set_idt 24
-        set_idt 25
-        set_idt 26
-        set_idt 27
-        set_idt 28
-        set_idt 29
-        set_idt 30
-        set_idt 31
+        set_idt_isr 0
+        set_idt_isr 1
+        set_idt_isr 2
+        set_idt_isr 3
+        set_idt_isr 4
+        set_idt_isr 5
+        set_idt_isr 6
+        set_idt_isr 7
+        set_idt_isr 8
+        set_idt_isr 9
+        set_idt_isr 10
+        set_idt_isr 11
+        set_idt_isr 12
+        set_idt_isr 13
+        set_idt_isr 14
+        set_idt_isr 15
+        set_idt_isr 16
+        set_idt_isr 17
+        set_idt_isr 18
+        set_idt_isr 19
+        set_idt_isr 20
+        set_idt_isr 21
+        set_idt_isr 22
+        set_idt_isr 23
+        set_idt_isr 24
+        set_idt_isr 25
+        set_idt_isr 26
+        set_idt_isr 27
+        set_idt_isr 28
+        set_idt_isr 29
+        set_idt_isr 30
+        set_idt_isr 31
+
+        set_idt_irq 32, 0
+        set_idt_irq 33, 1
+        set_idt_irq 34, 2
+        set_idt_irq 35, 3
+        set_idt_irq 36, 4
+        set_idt_irq 37, 5
+        set_idt_irq 38, 6
+        set_idt_irq 39, 7
+        set_idt_irq 40, 8
+        set_idt_irq 41, 9
+        set_idt_irq 42, 10
+        set_idt_irq 43, 11
+        set_idt_irq 44, 12
+        set_idt_irq 45, 13
+        set_idt_irq 46, 14
+        set_idt_irq 47, 15
+
 idt_end:
 
 idt_descriptor:
@@ -63,6 +90,15 @@ isr\i:
         cli
         push $\i
         jmp isr_common_stub
+        iret
+.endm
+
+.macro set_irq i, j
+irq\j:
+        cli
+        push $0
+        push $\i
+        jmp irq_common_stub
         iret
 .endm
 
@@ -98,6 +134,22 @@ isr\i:
         set_isr 29
         set_isr 30
         set_isr 31
+        set_irq 32, 0
+        set_irq 33, 1
+        set_irq 34, 2
+        set_irq 35, 3
+        set_irq 36, 4
+        set_irq 37, 5
+        set_irq 38, 6
+        set_irq 39, 7
+        set_irq 40, 8
+        set_irq 41, 9
+        set_irq 42, 10
+        set_irq 43, 11
+        set_irq 44, 12
+        set_irq 45, 13
+        set_irq 46, 14
+        set_irq 47, 15
 
 isr_common_stub:
         pusha
@@ -111,7 +163,9 @@ isr_common_stub:
         mov %ax, %gs
         mov %ax, %ss
 
+        push %esp
         call isr_handler
+        add $4, %esp
         
         pop %eax
         mov %ax, %ds
@@ -124,40 +178,73 @@ isr_common_stub:
         add $8, %esp
         iret
 
-isr_handler:
-        push %ebp
-        mov %esp, %ebp
-        sub $4, %esp
-        movw $msg_prefix, (%esp)
-        call console_print
-
-        /*
-         * information in stack
-         * =======================
-         * base pointer:         4
-         * instruction pointer:  4
-         * data selector:        4
-         * all registers:       32
-         * interrupt number:     4
-         * error code:           4
-         */
-        mov 44(%ebp), %edx
-        mov %edx, (%esp)
-        call console_printnum
-
-        movw $msg_suffix, (%esp)
-        call console_print
+irq_common_stub:
+        pusha
+        mov %ds, %ax
+        push %eax
+        
+        mov $0x10, %ax
+        mov %ax, %ds
+        mov %ax, %es
+        mov %ax, %fs
+        mov %ax, %gs
+        mov %ax, %ss
+        
+        push %esp
+        call irq_handler
         add $4, %esp
-        pop %ebp
+        
+        pop %eax
+        mov %ax, %ds
+        mov %ax, %es
+        mov %ax, %fs
+        mov %ax, %gs
+        mov %ax, %ss
 
-        ret
-
-msg_prefix:
-        .string "Interrupt: "
-
-msg_suffix:
-        .string "\n"
+        popa
+        add $8, %esp
+        iret
 
 load_idt:
+        mov $0x20, %dx
+        mov $0x11, %al
+        out %al, %dx
+
+        mov $0xa0, %dx
+        mov $0x11, %al
+        out %al, %dx
+
+        mov $0x21, %dx
+        mov $0x20, %al
+        out %al, %dx
+        
+        mov $0xa1, %dx
+        mov $0x28, %al
+        out %al, %dx
+        
+        mov $0x21, %dx
+        mov $0x04, %al
+        out %al, %dx
+        
+        mov $0xa1, %dx
+        mov $0x02, %al
+        out %al, %dx
+        
+        mov $0x21, %dx
+        mov $0x01, %al
+        out %al, %dx
+        
+        mov $0xa1, %dx
+        mov $0x01, %al
+        out %al, %dx
+        
+        mov $0x21, %dx
+        mov $0x00, %al
+        out %al, %dx
+        
+        mov $0xa1, %dx
+        mov $0x00, %al
+        out %al, %dx
+        
         lidt idt_descriptor
         ret

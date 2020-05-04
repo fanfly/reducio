@@ -22,13 +22,23 @@ void console_init() {
 }
 
 void console_putchar(char c) {
-    if (c == '\n') {
+    switch (c) {
+    case '\n':
         offset = (offset / 80 + 1) * 80;
-    } else {
+        break;
+    case '\r':
+        offset = offset / 80 * 80;
+        break;
+    default:
         VIDEO_MEMORY[offset] = 0x07 << 8 | c;
         ++offset;
     }
-    offset %= (80 * 25);
+    if (offset >= 80 * 25) {
+        for (int i = 0; i < 79 * 25; ++i) {
+            VIDEO_MEMORY[i] = VIDEO_MEMORY[i + 80];
+        }
+        offset -= 80;
+    }
     console_update();
 }
 
