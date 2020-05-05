@@ -4,11 +4,13 @@
 #include "func.h"
 #include "timer.h"
 
+#define FREQ 100
+
 int tick;
 
-void init_timer() {
+void init_timer(void) {
     tick = 0;
-    uint32_t val = 1193182 / 100;
+    uint32_t val = 1193182 / FREQ;
     out_byte(0x43, 0x36);
     out_byte(0x40, val & 0xff);
     out_byte(0x40, (val >> 8) & 0xff);
@@ -16,11 +18,8 @@ void init_timer() {
 
 void timer_callback(state_t *state) {
     ++tick;
-    int sec = tick / 100;
-    console_print("\rUptime: ");
-    console_printnum(sec);
-    console_print(" second");
-    if (sec > 1) {
-        console_print("s");
-    }
+}
+
+int uptime(void) {
+    return tick / 100;
 }

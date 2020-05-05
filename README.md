@@ -17,7 +17,5 @@ the OSDev Wiki to compile these tools.
 * Screen output
 * Interrupt handling
 * Timer
-
-### Todo
 * Keyboard input
 * Shell

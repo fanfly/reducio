@@ -2,6 +2,7 @@
 #include "func.h"
 #include "isr.h"
 #include "timer.h"
+#include "keyboard.h"
 
 void isr_handler(state_t *state) {
     return;
@@ -17,6 +18,9 @@ void irq_handler(state_t *state) {
     switch (irq_num) {
     case 0:
         timer_callback(state);
+        break;
+    case 1:
+        keyboard_callback(state);
         break;
     }
 }

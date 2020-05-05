@@ -14,7 +14,8 @@ reducio.bin: boot.bin kernel.bin
 boot.bin: boot.o
 	$(LD) $^ -Ttext=0x7c00 --oformat binary -o $@
 
-kernel.bin: kernel_entry.o kernel.o console.o func.o idt.o isr.o timer.o
+kernel.bin: kernel_entry.o kernel.o console.o func.o idt.o isr.o timer.o \
+		keyboard.o shell.o
 	$(LD) $^ -Ttext=0x1000 --oformat binary -o $@
 
 %.o: %.S

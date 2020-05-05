@@ -29,13 +29,23 @@ void console_putchar(char c) {
     case '\r':
         offset = offset / 80 * 80;
         break;
+    case '\b':
+        if (offset > 0) {
+            --offset;
+            VIDEO_MEMORY[offset] = 0x07 << 8 | ' ';
+        }
+        break;
     default:
         VIDEO_MEMORY[offset] = 0x07 << 8 | c;
         ++offset;
     }
     if (offset >= 80 * 25) {
-        for (int i = 0; i < 79 * 25; ++i) {
-            VIDEO_MEMORY[i] = VIDEO_MEMORY[i + 80];
+        for (int i = 0; i < 80 * 25; ++i) {
+            if (i < 80 * 24) {
+                VIDEO_MEMORY[i] = VIDEO_MEMORY[i + 80];
+            } else {
+                VIDEO_MEMORY[i] = 0x07 << 8 | ' ';
+            }
         }
         offset -= 80;
     }
