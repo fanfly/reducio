@@ -10,6 +10,11 @@ _start:
         mov $0, %dh
         int $0x13
 
+        mov $0xe801, %ax
+        int $0x15
+        mov %ax, memory_1m
+        mov %bx, memory_16m
+
         /* enter protect mode */
         cli
         lgdt gdt_descriptor
@@ -43,6 +48,11 @@ gdt_descriptor:
         .word gdt_end - gdt_start - 1
         .long gdt_start
 
+memory_1m:
+        .word 0
+memory_16m:
+        .word 0
+
 .code32
 init_protect_mode:
         mov $0x10, %ax
@@ -53,6 +63,10 @@ init_protect_mode:
         mov %ax, %gs
         mov $0x90000, %ebp
         mov %ebp, %esp
+        movw memory_1m, %ax
+        movw %ax, 0x90000
+        movw memory_16m, %ax
+        movw %ax, 0x90002
         call 0x1000
         jmp .
 

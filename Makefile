@@ -25,7 +25,7 @@ kernel.bin: kernel_entry.o kernel.o console.o func.o idt.o isr.o timer.o \
 	$(CC) -ffreestanding -c $^ -o $@
 
 run: reducio.bin
-	$(QEMU) -drive format=raw,file=$<
+	$(QEMU) -m 1024 -drive format=raw,file=$<
 
 clean:
 	$(RM) *.bin *.o
