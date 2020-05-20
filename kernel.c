@@ -4,13 +4,14 @@
 #include "func.h"
 #include "timer.h"
 #include "keyboard.h"
+#include "paging.h"
 
 void kernel_main() {
     load_idt();
     console_init();
     console_print("\nWelcome to Reducio!\n\n");
-    uint16_t memory_1m = *(uint16_t *) 0x90000;
-    uint16_t memory_16m = *(uint16_t *) 0x90002;
+    uint16_t memory_1m = *(uint16_t *)0x90000;
+    uint16_t memory_16m = *(uint16_t *)0x90002;
     console_print("Memory: ");
     console_printnum(memory_1m + (memory_16m << 6));
     console_print(" KiB\n\n");
@@ -19,4 +20,6 @@ void kernel_main() {
     init_timer();
     init_keyboard();
     enable_interrupt();
+    init_paging();
+    enable_paging();
 }

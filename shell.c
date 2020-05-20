@@ -34,6 +34,8 @@ void shell_exec(const char *cmd) {
     if (strcmp(cmd, "uptime") == 0) {
         console_printnum(uptime());
         console_print("\n");
+    } else if (strcmp(cmd, "fault") == 0) {
+        ((uint8_t *)0x3fffff)[1] = 0;
     } else if (strcmp(cmd, "") != 0) {
         console_print(cmd);
         console_print(": command not found\n");

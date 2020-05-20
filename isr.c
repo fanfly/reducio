@@ -5,6 +5,15 @@
 #include "keyboard.h"
 
 void isr_handler(state_t *state) {
+    int isr_num = state->int_num;
+    switch (isr_num) {
+    case 14:
+        console_print("Page Fault! (at address ");
+        console_printnum(load_cr2());
+        console_print(")\n");
+        while (1) continue;
+        break;
+    }
     return;
 }
 
