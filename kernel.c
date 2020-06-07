@@ -15,8 +15,10 @@ void kernel_main() {
     console_print("Memory: ");
     console_printnum(memory_1m + (memory_16m << 6));
     console_print(" KiB\n\n");
-    console_print("You can use command 'uptime' to print the uptime in "
-                  "seconds.\n\n");
+    console_print("You can use command \"uptime\" to print the uptime in "
+                  "seconds.\n");
+    console_print("Also, you can use command \"shutdown\" to shutdown.\n");
+    console_print("\n");
     init_timer();
     init_keyboard();
     enable_interrupt();

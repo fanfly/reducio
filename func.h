@@ -15,4 +15,6 @@ void store_cr2(uint32_t value);
 uint32_t load_cr3(void);
 void store_cr3(uint32_t value);
 
+void shutdown(void);
+
 #endif

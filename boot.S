@@ -42,6 +42,22 @@ gdt_data:
         .byte 0xcf
         .byte 0x00
 
+gdt_code16:
+        .word 0xffff
+        .word 0x0000
+        .byte 0x00
+        .byte 0x9a
+        .byte 0x0f
+        .byte 0x00
+
+gdt_data16:
+        .word 0xffff
+        .word 0x0000
+        .byte 0x00
+        .byte 0x92
+        .byte 0x0f
+        .byte 0x00
+
 gdt_end:
 
 gdt_descriptor:

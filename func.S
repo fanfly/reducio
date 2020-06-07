@@ -52,3 +52,54 @@ store_cr3:
         mov 4(%esp), %eax
         mov %eax, %cr3
         ret
+
+.global shutdown
+shutdown:
+        cli
+
+        /* turn off paging */
+        mov %cr0, %eax
+        and $0x7fffffff, %eax
+        mov %eax, %cr0
+        mov $0, %eax
+        mov %eax, %cr3
+
+        jmp $0x18, $protected16
+
+.code16
+protected16:
+        mov $0x20, %ax
+        mov %ax, %ds
+        mov %ax, %ss
+        mov %ax, %es
+        mov %ax, %fs
+        mov %ax, %gs
+
+        /* disable protected mode */
+        mov %cr0, %eax
+        and $0xfffffffe, %eax
+        mov %eax, %cr0
+        jmp $0, $real16
+
+real16:
+        mov $0, %ax
+        mov %ax, %ds
+        mov %ax, %ss
+        mov %ax, %es
+        mov %ax, %fs
+        mov %ax, %gs
+        lidt real_idt_descriptor
+        sti
+
+        mov $0x1000, %ax
+        mov %ss, %ax
+        mov $0xf000, %sp
+        mov $0x5307, %ax
+        mov $0x0001, %bx
+        mov $0x0003, %cx
+        int $0x15
+        jmp .
+
+real_idt_descriptor:
+        .word 0x03ff
+        .long 0

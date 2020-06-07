@@ -36,6 +36,9 @@ void shell_exec(const char *cmd) {
         console_print("\n");
     } else if (strcmp(cmd, "fault") == 0) {
         ((uint8_t *)0x3fffff)[1] = 0;
+    } else if (strcmp(cmd, "shutdown") == 0) {
+        console_print("Shutdown test.\n");
+        shutdown();
     } else if (strcmp(cmd, "") != 0) {
         console_print(cmd);
         console_print(": command not found\n");
