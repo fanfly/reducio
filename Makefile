@@ -3,29 +3,31 @@ LD=i686-elf-ld
 CC=i686-elf-gcc
 QEMU=qemu-system-i386
 RM=rm -f
+CFLAGS=-Iinclude -ffreestanding
 
 .PHONY: all run clean
 
-all: reducio.bin
+all: bin/reducio.bin
 
-reducio.bin: boot.bin kernel.bin
+bin/reducio.bin: bin/boot.bin bin/kernel.bin
 	cat $^ > $@
 
-boot.bin: boot.o
+bin/boot.bin: bin/boot.o
 	$(LD) $^ -Ttext=0x7c00 --oformat binary -o $@
 
-kernel.bin: kernel_entry.o kernel.o console.o func.o idt.o isr.o timer.o \
-		keyboard.o shell.o paging.o
+bin/kernel.bin: bin/kernel_entry.o bin/kernel.o bin/console.o bin/func.o \
+		bin/idt.o bin/isr.o bin/timer.o \
+		bin/keyboard.o bin/shell.o bin/paging.o
 	$(LD) $^ -Ttext=0x1000 --oformat binary -o $@
 
-%.o: %.S
+bin/%.o: */%.S
 	$(AS) $^ -o $@
 
-%.o: %.c
-	$(CC) -ffreestanding -c $^ -o $@
+bin/%.o: */%.c
+	$(CC) $(CFLAGS) -c $^ -o $@
 
-run: reducio.bin
+run: bin/reducio.bin
 	$(QEMU) -m 1024 -drive format=raw,file=$<
 
 clean:
-	$(RM) *.bin *.o
+	$(RM) bin/*.bin bin/*.o
