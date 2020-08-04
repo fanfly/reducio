@@ -2,20 +2,21 @@
 .code16
 
 _start:
-        mov $0x1000, %bx
-        mov $0x02, %ah
-        mov $10, %al
-        mov $2, %cl
-        mov $0, %ch
-        mov $0, %dh
-        int $0x13
+        // Read sectors from drive.
+        mov $10, %al             // number of sectors to read
+        mov $2, %cl              // starting sector number
+        mov $0, %ch              // cylinder number
+        mov $0, %dh              // head number
+        mov $0x1000, %bx         // address of memory buffer
+        mov $0x02, %ah           // set AH := 02h
+        int $0x13                // interrupt 13h
 
         mov $0xe801, %ax
         int $0x15
         mov %ax, memory_1m
         mov %bx, memory_16m
 
-        /* enter protect mode */
+        // Enter protect mode.
         cli
         lgdt gdt_descriptor
         mov %cr0, %eax

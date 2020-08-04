@@ -4,19 +4,11 @@
 #include "func.h"
 
 int strcmp(const char *lhs, const char *rhs) {
-    if (*lhs == 0 && *rhs == 0) {
-        return 0;
-    } else if (*lhs == 0) {
-        return -1;
-    } else if (*rhs == 0) {
-        return 1;
-    } else {
-        if (*lhs != *rhs) {
-            return (*lhs < *rhs) ? -1 : 1;
-        } else {
-            return strcmp(lhs + 1, rhs + 1);
-        }
+    while (*lhs && (*lhs == *rhs)) {
+        ++lhs;
+        ++rhs;
     }
+    return *lhs - *rhs;
 }
 
 void strcpy(char *dst, const char *src) {
@@ -32,15 +24,16 @@ void shell_exec(const char *cmd) {
         ++cmd;
     }
     if (strcmp(cmd, "uptime") == 0) {
-        console_printnum(uptime());
-        console_print("\n");
+        console_printf("%d\n", uptime());
     } else if (strcmp(cmd, "fault") == 0) {
         ((uint8_t *)0x3fffff)[1] = 0;
     } else if (strcmp(cmd, "shutdown") == 0) {
-        console_print("Shutdown test.\n");
+        console_printf("Goodbye.\n");
+        for (int i = 0; i < 120000000; ++i) { continue; }
         shutdown();
-    } else if (strcmp(cmd, "") != 0) {
-        console_print(cmd);
-        console_print(": command not found\n");
+    } else if (strcmp(cmd, "") == 0) {
+        ;
+    } else {
+        console_printf("%s: command not found\n", cmd);
     }
 }

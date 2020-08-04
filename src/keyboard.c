@@ -18,7 +18,7 @@ void init_keyboard(void) {
     len = 0;
     lshift = false;
     rshift = false;
-    console_print(SHELL_PREFIX);
+    console_printf("%s", SHELL_PREFIX);
 }
 
 char scancode_to_ascii(uint8_t scancode, bool shift) {
@@ -64,7 +64,7 @@ void keyboard_callback(state_t *state) {
         console_putchar('\n');
         buffer[len] = 0;
         shell_exec(buffer);
-        console_print(SHELL_PREFIX);
+        console_printf("%s", SHELL_PREFIX);
         len = 0;
         break;
     default:

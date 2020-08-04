@@ -7,7 +7,6 @@ typedef struct console {
 
 void console_init();
 void console_putchar(char c);
-void console_print(const char *str);
-void console_printnum(int x);
+void console_printf(const char *str, ...);
 
 #endif

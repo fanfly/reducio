@@ -9,16 +9,16 @@
 void kernel_main() {
     load_idt();
     console_init();
-    console_print("\nWelcome to Reducio!\n\n");
+
+    console_printf("\n");
+    console_printf("Welcome to Reducio!\n");
+    console_printf("\n");
     uint16_t memory_1m = *(uint16_t *)0x90000;
     uint16_t memory_16m = *(uint16_t *)0x90002;
-    console_print("Memory: ");
-    console_printnum(memory_1m + (memory_16m << 6));
-    console_print(" KiB\n\n");
-    console_print("You can use command \"uptime\" to print the uptime in "
-                  "seconds.\n");
-    console_print("Also, you can use command \"shutdown\" to shutdown.\n");
-    console_print("\n");
+
+    console_printf("Memory: %d KiB\n", memory_1m + (memory_16m << 6));
+    console_printf("\n");
+
     init_timer();
     init_keyboard();
     enable_interrupt();
