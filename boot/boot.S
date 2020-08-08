@@ -13,8 +13,7 @@ _start:
 
         mov $0xe801, %ax
         int $0x15
-        mov %ax, memory_1m
-        mov %bx, memory_16m
+        movw %bx, 0x9000         // memory above 16 MiB in 64 KiB blocks
 
         // Enter protect mode.
         cli
@@ -80,10 +79,6 @@ init_protect_mode:
         mov %ax, %gs
         mov $0x90000, %ebp
         mov %ebp, %esp
-        movw memory_1m, %ax
-        movw %ax, 0x90000
-        movw memory_16m, %ax
-        movw %ax, 0x90002
         call 0x1000
         jmp .
 

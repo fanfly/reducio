@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "timer.h"
 #include "func.h"
+#include "paging.h"
 
 int strcmp(const char *lhs, const char *rhs) {
     while (*lhs && (*lhs == *rhs)) {
@@ -31,9 +32,11 @@ void shell_exec(const char *cmd) {
         console_printf("Goodbye.\n");
         for (int i = 0; i < 120000000; ++i) { continue; }
         shutdown();
-    } else if (strcmp(cmd, "") == 0) {
-        ;
+    } else if (strcmp(cmd, "pages") == 0) {
+        console_printf("%d\n", num_available_pages());
     } else {
-        console_printf("%s: command not found\n", cmd);
+        if (strcmp(cmd, "") != 0) {
+            console_printf("%s: command not found\n", cmd);
+        }
     }
 }
